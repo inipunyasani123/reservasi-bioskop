@@ -2,7 +2,7 @@
 
 Bioskop satu layar (fiktif) dengan 96 kursi. Paradigma **peta kursi**: pilih hari dan jam tayang dari program harian, lalu kursi di denah studio.
 
-**Demo live:** https://reservasi-bioskop.vercel.app
+**Demo live:** https://reservasi-bioskop.pintuweb.id
 
 ![Tangkapan layar](public/og.jpg)
 

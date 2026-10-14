@@ -5,10 +5,10 @@ import Kaki from '@/components/Kaki';
 
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit', display: 'swap' });
 
-const __jsonld = {"@context":"https://schema.org","@type":"WebSite","name":"Bioskop Kelir","description":"Bioskop satu layar dengan 96 kursi: lihat program tayang hari ini, pilih kursi langsung di denah studio, dan simpan tiketmu. Film dan bioskop fiktif.","url":"https://reservasi-bioskop.vercel.app","inLanguage":"id"};
+const __jsonld = {"@context":"https://schema.org","@type":"WebSite","name":"Bioskop Kelir","description":"Bioskop satu layar dengan 96 kursi: lihat program tayang hari ini, pilih kursi langsung di denah studio, dan simpan tiketmu. Film dan bioskop fiktif.","url":"https://reservasi-bioskop.pintuweb.id","inLanguage":"id"};
 
 export const metadata = {
-  metadataBase: new URL("https://reservasi-bioskop.vercel.app"),
+  metadataBase: new URL("https://reservasi-bioskop.pintuweb.id"),
   title: { default: "Bioskop Kelir — Pesan tiket dan pilih kursi", template: "%s — Bioskop Kelir" },
   description: "Bioskop satu layar dengan 96 kursi: lihat program tayang hari ini, pilih kursi langsung di denah studio, dan simpan tiketmu. Film dan bioskop fiktif.",
   applicationName: "Bioskop Kelir",
@@ -16,11 +16,11 @@ export const metadata = {
   authors: [{ name: "Bioskop Kelir" }],
   creator: "Bioskop Kelir",
   publisher: "Bioskop Kelir",
-  alternates: { canonical: "https://reservasi-bioskop.vercel.app" },
+  alternates: { canonical: "https://reservasi-bioskop.pintuweb.id" },
   openGraph: {
     type: "website",
     locale: "id_ID",
-    url: "https://reservasi-bioskop.vercel.app",
+    url: "https://reservasi-bioskop.pintuweb.id",
     siteName: "Bioskop Kelir",
     title: "Bioskop Kelir — Pesan tiket dan pilih kursi",
     description: "Bioskop satu layar dengan 96 kursi: lihat program tayang hari ini, pilih kursi langsung di denah studio, dan simpan tiketmu. Film dan bioskop fiktif.",

@@ -1,6 +1,6 @@
 import { films } from '@/lib/data';
 
-const URL = 'https://reservasi-bioskop.vercel.app';
+const URL = 'https://reservasi-bioskop.pintuweb.id';
 
 export default function sitemap() {
   const now = new Date();
