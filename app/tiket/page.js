@@ -1,11 +1,12 @@
 import DaftarTiket from '@/components/DaftarTiket';
+import { halaman } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Tiket saya',
-  description: 'Tiket Bioskop Kelir yang tersimpan di peramban ini: film, jam tayang, kursi, dan kode tiket.',
-  alternates: { canonical: '/tiket' },
+export const metadata = halaman({
+  judul: 'Tiket saya',
+  deskripsi: 'Tiket Bioskop Kelir yang tersimpan di peramban ini: film, jam tayang, kursi, dan kode tiket.',
+  path: '/tiket',
   robots: { index: false, follow: true },
-};
+});
 
 export default function TiketPage() {
   return (

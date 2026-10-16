@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { films, getFilm, programHari, cinema } from '@/lib/data';
 import { rupiah } from '@/lib/waktu';
+import { halaman } from '@/lib/seo';
 
 export function generateStaticParams() {
   return films.map((f) => ({ id: f.id }));
@@ -12,7 +13,7 @@ export async function generateMetadata({ params }) {
   const { id } = await params;
   const f = getFilm(id);
   if (!f) return { title: 'Film tidak ditemukan' };
-  return { title: f.title, description: `${f.genre}, ${f.durasi} menit, ${f.klasifikasi}. ${f.sinopsis}`.slice(0, 160), alternates: { canonical: `/film/${f.id}` } };
+  return halaman({ judul: f.title, deskripsi: `${f.genre}, ${f.durasi} menit, ${f.klasifikasi}. ${f.sinopsis}`, path: `/film/${f.id}` });
 }
 
 const KET = { SU: 'Semua umur', '13+': 'Usia 13 tahun ke atas', '17+': 'Usia 17 tahun ke atas' };
@@ -29,7 +30,7 @@ export default async function FilmPage({ params }) {
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-10">
-      <Link href="/film" className="inline-flex items-center gap-1 text-sm font-semibold text-white/80 hover:text-amber-300"><ArrowLeft size={15} aria-hidden="true" /> Semua film</Link>
+      <Link href="/film" className="-my-2 inline-flex items-center gap-1 py-2 text-sm font-semibold text-white/80 hover:text-amber-300"><ArrowLeft size={15} aria-hidden="true" /> Semua film</Link>
       <div className="mt-6 grid gap-8 sm:grid-cols-[200px_1fr]">
         <div className={`flex aspect-[2/3] items-end rounded-2xl bg-gradient-to-br p-4 ${f.color}`} aria-hidden="true">
           <span className="text-2xl font-bold leading-tight text-white drop-shadow">{f.title}</span>

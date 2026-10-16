@@ -23,6 +23,17 @@ body {
 
 :focus-visible { outline: 2px solid #f59e0b; outline-offset: 2px; border-radius: 6px; }
 
+/* Animasi masuk ringan, tanpa pustaka animasi */
+@keyframes muncul-naik { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes muncul-bawah { from { opacity: 0; transform: translateY(100%); } to { opacity: 1; transform: none; } }
+@keyframes muncul-skala { from { opacity: 0; transform: translateY(8px) scale(0.95); } to { opacity: 1; transform: none; } }
+@keyframes muncul-pudar { from { opacity: 0; } to { opacity: 1; } }
+.anim-naik { animation: muncul-naik 0.3s ease-out both; }
+.anim-bawah { animation: muncul-bawah 0.3s ease-out both; }
+.anim-skala { animation: muncul-skala 0.25s ease-out both; }
+.anim-pudar { animation: muncul-pudar 0.2s ease-out both; }
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
 }

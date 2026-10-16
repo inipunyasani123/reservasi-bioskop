@@ -54,7 +54,7 @@ export default function DaftarTiket() {
                         <p className="font-mono text-xl font-bold tracking-widest">{t.kode}</p>
                         <p className="mt-1 text-sm text-white/75">{t.name} · {rupiah(t.total)}</p>
                       </div>
-                      <button type="button" onClick={() => batal(t)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-rose-300 hover:underline"><X size={15} aria-hidden="true" /> Batalkan</button>
+                      <button type="button" onClick={() => batal(t)} className="-my-2 inline-flex items-center gap-1.5 py-2 text-sm font-semibold text-rose-300 hover:underline"><X size={15} aria-hidden="true" /> Batalkan</button>
                     </div>
                   </div>
                 </li>
@@ -72,7 +72,7 @@ export default function DaftarTiket() {
             {lalu.map((t) => (
               <li key={t.id} className="flex flex-wrap items-center justify-between gap-2 px-5 py-3 text-sm text-white/80">
                 <span>{t.film} · {fmtTanggal(t.date, { day: 'numeric', month: 'short' })}, {t.time} · {t.seats.join(', ')}</span>
-                <button type="button" onClick={() => setTiket((p) => p.filter((x) => x.id !== t.id))} className="font-semibold text-white hover:underline">Hapus</button>
+                <button type="button" onClick={() => setTiket((p) => p.filter((x) => x.id !== t.id))} className="-my-2 py-2 font-semibold text-white hover:underline">Hapus</button>
               </li>
             ))}
           </ul>

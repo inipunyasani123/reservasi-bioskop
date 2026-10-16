@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { films } from '@/lib/data';
+import { halaman } from '@/lib/seo';
 
-export const metadata = {
-  title: 'Film',
-  description: 'Film yang sedang tayang di Bioskop Kelir: sinopsis, durasi, klasifikasi usia, dan jam tayang.',
-  alternates: { canonical: '/film' },
-};
+export const metadata = halaman({
+  judul: 'Film yang sedang tayang',
+  deskripsi: 'Lima film yang sedang tayang di Bioskop Kelir: sinopsis, durasi, klasifikasi usia LSF, dan jam tayang hari biasa maupun akhir pekan.',
+  path: '/film',
+});
 
 export default function FilmIndex() {
   return (

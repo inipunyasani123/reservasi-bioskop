@@ -1,18 +1,18 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Clock } from 'lucide-react';
-import { cinema, rows, cols, aisleAfter, programHari, hargaTiket, terisiContoh } from '@/lib/data';
+import { cinema, rows, cols, aisleAfter, programHari, hargaTiket, terisiContoh, getFilm } from '@/lib/data';
 import { useLocalStorage } from '@/lib/useLocalStorage';
 import { useHariIni } from '@/lib/useHariIni';
+import { useDialog } from '@/lib/useDialog';
 import { tambahHari, hariKe, fmtTanggal, sudahLewat, rupiah, kodePesan } from '@/lib/waktu';
 
 const HARI = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+// Denah: label baris, 6 kursi, lorong, 6 kursi. Kolom fleksibel supaya 12 kursi muat di layar ponsel.
+const KOLOM = { gridTemplateColumns: `0.875rem repeat(${aisleAfter}, minmax(1.5rem, 1fr)) 0.5rem repeat(${cols - aisleAfter}, minmax(1.5rem, 1fr))` };
 
 export default function BioskopApp() {
-  const sp = useSearchParams();
   const { hari, sekarang } = useHariIni(60);
   const [tiket, setTiket] = useLocalStorage('bioskopkelir.tiket', []);
   const [date, setDate] = useState(null);
@@ -20,16 +20,17 @@ export default function BioskopApp() {
   const [seats, setSeats] = useState([]);
   const [form, setForm] = useState({ name: '', phone: '' });
   const [done, setDone] = useState(null);
+  const dialog = useDialog(!!done, () => setDone(null));
 
   const lewat = (d, jam) => (sekarang ? sudahLewat(d, jam, 0, sekarang) : true);
   const hariPil = useMemo(() => (hari ? Array.from({ length: 5 }, (_, i) => tambahHari(hari, i)) : []), [hari]);
   const program = useMemo(() => (date ? programHari(date) : []), [date]);
   const show = program.find((p) => p.id === showId) || null;
 
-  // Pilih hari & jam tayang pertama yang belum mulai; ?film= memilih jam tayang film itu.
+  // Pilih hari & jam tayang pertama yang belum mulai; ?film= (dari halaman film) memilih jam tayang film itu.
   useEffect(() => {
     if (!hari || date) return;
-    const ingin = sp.get('film');
+    const ingin = new URLSearchParams(window.location.search).get('film');
     for (const d of Array.from({ length: 5 }, (_, i) => tambahHari(hari, i))) {
       const p = programHari(d).find((x) => !lewat(d, x.jam) && (!ingin || x.film.id === ingin));
       if (p) { setDate(d); setShowId(p.id); return; }
@@ -78,14 +79,22 @@ export default function BioskopApp() {
 
         <section aria-labelledby="h-hari" className="mt-6">
           <h2 id="h-hari" className="sr-only">Tanggal</h2>
-          {!hari ? <p className="text-sm text-white/75">Memuat jadwal…</p> : (
-            <div className="relative flex gap-2 overflow-x-auto pb-1">
+          {/* Kerangka seukuran isi aslinya: tanggal WIB baru diketahui di peramban, jadi tata letak tidak bergeser. */}
+          {!hari ? (
+            <div className="grid grid-cols-5 gap-2 sm:flex" role="status">
+              <span className="sr-only">Memuat jadwal…</span>
+              {Array.from({ length: 5 }, (_, i) => <span key={i} className="min-h-14 rounded-lg border border-white/10 bg-white/5 sm:w-20" aria-hidden="true" />)}
+            </div>
+          ) : (
+            <div className="grid grid-cols-5 gap-2 sm:flex">
               {hariPil.map((d, i) => {
                 const habis = programHari(d).every((p) => lewat(d, p.jam));
                 return (
                   <button key={d} type="button" disabled={habis} onClick={() => pilihHari(d)} aria-pressed={date === d}
-                    className={`shrink-0 rounded-lg border px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${date === d ? 'border-amber-500 bg-amber-500 text-black' : 'border-white/20 bg-white/5 text-white/90 hover:border-amber-400'}`}>
-                    {i === 0 ? 'Hari ini' : i === 1 ? 'Besok' : HARI[hariKe(d)]} {Number(d.slice(8))}
+                    className={`flex min-h-14 flex-col items-center justify-center rounded-lg border px-1 py-1.5 transition disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-20 sm:px-4 ${date === d ? 'border-amber-500 bg-amber-500 text-black' : 'border-white/20 bg-white/5 text-white/90 hover:border-amber-400'}`}>
+                    <span className="text-[11px] font-semibold uppercase tracking-wide">{i === 0 ? 'Hari ini' : i === 1 ? 'Besok' : HARI[hariKe(d)]}</span>{' '}
+                    <span className="text-lg font-bold leading-tight">{Number(d.slice(8))}</span>
+                    <span className="sr-only"> {fmtTanggal(d, { month: 'long' })}{habis ? ', semua jam tayang sudah lewat' : ''}</span>
                   </button>
                 );
               })}
@@ -96,6 +105,7 @@ export default function BioskopApp() {
         <section aria-labelledby="h-program" className="mt-6">
           <h2 id="h-program" className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">Program {date ? fmtTanggal(date, { weekday: 'long', day: 'numeric', month: 'long' }) : ''}</h2>
           <ul className="mt-3 space-y-2">
+            {!date && Array.from({ length: 5 }, (_, i) => <li key={i} className="h-[4.6rem] rounded-xl border border-white/10 bg-white/5 sm:h-16" aria-hidden="true" />)}
             {program.map((p) => {
               const habis = lewat(date, p.jam); const aktif = showId === p.id;
               return (
@@ -113,9 +123,11 @@ export default function BioskopApp() {
               );
             })}
           </ul>
-          {show && <Link href={`/film/${show.film.id}`} className="mt-3 inline-block text-sm font-semibold text-amber-300 underline-offset-4 hover:underline">Sinopsis {show.film.title}</Link>}
+          {!date && <span className="mt-2 block h-8" aria-hidden="true" />}
+          {show && <Link href={`/film/${show.film.id}`} className="mt-2 inline-block py-1.5 text-sm font-semibold text-amber-300 underline-offset-4 hover:underline">Sinopsis {show.film.title}</Link>}
         </section>
 
+        {!date && <div className="mt-10 h-[360px] rounded-2xl border border-white/5 bg-white/[0.02] sm:h-[442px]" aria-hidden="true" />}
         {show && (
           <section aria-labelledby="h-kursi" className="mt-10">
             <h2 id="h-kursi" className="sr-only">Pilih kursi</h2>
@@ -125,28 +137,25 @@ export default function BioskopApp() {
             </div>
             <p className="mb-8 mt-4 text-center text-[11px] uppercase tracking-[0.35em] text-amber-200">Layar · {sisa} kursi tersisa</p>
 
-            <div className="relative overflow-x-auto pb-2">
-              <div className="mx-auto w-max space-y-2">
+            <div className="-mx-1 overflow-x-auto px-1 pb-2">
+              <div className="mx-auto w-full max-w-[30rem] space-y-[3px] sm:space-y-1.5">
                 {rows.map((r) => (
-                  <div key={r} className="flex items-center gap-2">
-                    <span className="w-4 text-center text-[11px] font-bold text-white/75" aria-hidden="true">{r}</span>
-                    <div className="flex gap-1.5">
-                      {Array.from({ length: cols }, (_, i) => i + 1).map((c) => {
-                        const id = `${r}${c}`;
-                        const taken = takenSet.has(id);
-                        const sel = seats.includes(id);
-                        return (
-                          <span key={id} className={c === aisleAfter + 1 ? 'ml-5' : ''}>
-                            <button type="button" disabled={taken} onClick={() => toggle(id)} aria-pressed={sel} aria-label={`Kursi ${id}${taken ? ', terisi' : ''}`}
-                              className={`flex h-7 w-7 items-center justify-center rounded-md rounded-b-sm text-[9px] font-bold transition ${
-                                sel ? 'bg-amber-500 text-black' : taken ? 'cursor-not-allowed bg-white/10 text-white/30' : 'bg-white/20 text-white/90 hover:bg-amber-400/50'
-                              }`}>
-                              {c}
-                            </button>
-                          </span>
-                        );
-                      })}
-                    </div>
+                  <div key={r} role="group" aria-label={`Baris ${r}`} className="grid items-center gap-[3px] sm:gap-1.5" style={KOLOM}>
+                    <span className="text-center text-[11px] font-bold text-white/75" aria-hidden="true">{r}</span>
+                    {Array.from({ length: cols }, (_, i) => i + 1).map((c) => {
+                      const id = `${r}${c}`;
+                      const taken = takenSet.has(id);
+                      const sel = seats.includes(id);
+                      return [
+                        c === aisleAfter + 1 ? <span key={`lorong-${r}`} aria-hidden="true" /> : null,
+                        <button key={id} type="button" disabled={taken} onClick={() => toggle(id)} aria-pressed={sel}
+                          className={`flex aspect-square w-full items-center justify-center rounded-md rounded-b-sm text-[10px] font-bold transition sm:text-[11px] ${
+                            sel ? 'bg-amber-500 text-black' : taken ? 'cursor-not-allowed bg-white/10 text-white/30' : 'bg-white/20 text-white/90 hover:bg-amber-400/50'
+                          }`}>
+                          <span className="sr-only">Kursi {r}</span>{c}<span className="sr-only">{taken ? ', terisi' : ''}</span>
+                        </button>,
+                      ];
+                    })}
                   </div>
                 ))}
               </div>
@@ -162,10 +171,9 @@ export default function BioskopApp() {
         )}
       </main>
 
-      <AnimatePresence>
-        {show && seats.length > 0 && (
-          <motion.form initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }} onSubmit={confirm}
-            className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#11101c]/95 backdrop-blur">
+      {show && seats.length > 0 && (
+          <form onSubmit={confirm} aria-label="Data pemesan dan simpan tiket"
+            className="anim-bawah fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#11101c]/95 backdrop-blur">
             <div className="mx-auto max-w-3xl px-5 py-4">
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
@@ -185,32 +193,47 @@ export default function BioskopApp() {
               </div>
               <p className="mt-2 text-center text-[11px] text-white/70">Purwarupa: tanpa pembayaran, tiket disimpan di peramban ini.</p>
             </div>
-          </motion.form>
-        )}
-      </AnimatePresence>
+          </form>
+      )}
 
-      <AnimatePresence>
-        {done && (
-          <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDone(null)}>
-            <motion.div role="dialog" aria-modal="true" aria-labelledby="judul-selesai" initial={{ scale: 0.9, y: 10 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0 }} onClick={(e) => e.stopPropagation()} className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#15131f] p-7 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-500 text-black"><Check size={28} /></div>
-              <h2 id="judul-selesai" className="mt-4 text-2xl font-bold">Tiket tersimpan</h2>
-              <p className="mt-1 text-sm text-white/75">Kode <span className="font-mono font-semibold text-white">{done.kode}</span> · {done.name}</p>
-              <dl className="mt-5 space-y-1.5 rounded-xl bg-white/5 p-4 text-left text-sm text-white/80">
-                <div className="flex justify-between gap-3"><dt>Film</dt><dd className="text-right font-semibold text-white">{done.film} ({done.klasifikasi})</dd></div>
-                <div className="flex justify-between gap-3"><dt>Waktu</dt><dd className="text-right font-semibold text-white">{fmtTanggal(done.date, { weekday: 'short', day: 'numeric', month: 'short' })}, {done.time}</dd></div>
-                <div className="flex justify-between gap-3"><dt>Kursi</dt><dd className="text-right font-semibold text-amber-300">{done.seats.join(', ')}</dd></div>
-                <div className="flex justify-between gap-3"><dt>Total</dt><dd className="font-semibold text-white">{rupiah(done.total)}</dd></div>
-              </dl>
-              <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-white/75"><Clock size={13} aria-hidden="true" /> Pintu studio dibuka 15 menit sebelum film. Purwarupa — tanpa pembayaran.</p>
-              <div className="mt-5 grid grid-cols-2 gap-2">
-                <Link href="/tiket" className="rounded-xl bg-amber-500 py-3 text-sm font-bold text-black hover:bg-amber-400">Tiket saya</Link>
-                <button type="button" onClick={() => setDone(null)} className="rounded-xl border border-white/20 py-3 text-sm font-semibold text-white/90 hover:bg-white/5">Tutup</button>
+      {done && (
+          <div className="anim-pudar fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5" onClick={() => setDone(null)}>
+            <div ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="judul-selesai" onClick={(e) => e.stopPropagation()} className="anim-skala w-full max-w-sm overflow-hidden rounded-2xl bg-[#15131f] text-left shadow-2xl outline-none ring-1 ring-white/10">
+              {/* Tiket bersobekan: badan tiket di atas, potongan kode di bawah garis sobek */}
+              <div className={`h-1.5 bg-gradient-to-r ${getFilm(done.filmId)?.color || 'from-amber-400 to-amber-600'}`} aria-hidden="true" />
+              <div className="flex gap-4 px-6 pb-5 pt-6">
+                <span className={`flex h-20 w-14 shrink-0 items-end justify-center rounded-lg bg-gradient-to-br pb-1.5 text-[10px] font-bold ${getFilm(done.filmId)?.color || ''}`} aria-hidden="true"><span className="rounded bg-black/50 px-1.5 py-0.5">{done.klasifikasi}</span></span>
+                <div className="min-w-0">
+                  <h2 id="judul-selesai">
+                    <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-amber-300"><Check size={13} aria-hidden="true" /> Tiket tersimpan</span>
+                    <span className="mt-1 block text-2xl font-bold leading-tight">{done.film}</span>
+                  </h2>
+                  <p className="mt-1 text-sm text-white/75">{fmtTanggal(done.date, { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+                </div>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <dl className="grid grid-cols-3 gap-3 px-6 pb-5 text-sm">
+                <div><dt className="text-[11px] uppercase tracking-wide text-white/70">Kursi</dt><dd className="mt-0.5 font-bold text-amber-300">{done.seats.join(', ')}</dd></div>
+                <div><dt className="text-[11px] uppercase tracking-wide text-white/70">Jam</dt><dd className="mt-0.5 font-mono font-bold">{done.time}</dd></div>
+                <div><dt className="text-[11px] uppercase tracking-wide text-white/70">Total</dt><dd className="mt-0.5 font-bold">{rupiah(done.total)}</dd></div>
+              </dl>
+              <div className="relative border-t-2 border-dashed border-white/15" aria-hidden="true">
+                <span className="absolute -left-3 -top-3 h-6 w-6 rounded-full bg-[#040406]" />
+                <span className="absolute -right-3 -top-3 h-6 w-6 rounded-full bg-[#040406]" />
+              </div>
+              <div className="px-6 pb-6 pt-5">
+                <div className="flex items-end justify-between gap-3">
+                  <div><p className="text-[11px] uppercase tracking-wide text-white/70">Kode tiket</p><p className="font-mono text-2xl font-bold tracking-widest">{done.kode}</p></div>
+                  <p className="text-right text-sm text-white/75">atas nama<br /><span className="font-semibold text-white">{done.name}</span></p>
+                </div>
+                <p className="mt-4 flex items-start gap-1.5 text-xs text-white/75"><Clock size={13} className="mt-0.5 shrink-0" aria-hidden="true" /> Pintu studio dibuka 15 menit sebelum film. Purwarupa: tanpa pembayaran, tiket hanya tersimpan di peramban ini.</p>
+                <div className="mt-5 grid grid-cols-2 gap-2 text-center">
+                  <Link href="/tiket" className="rounded-xl bg-amber-500 py-3 text-sm font-bold text-black hover:bg-amber-400">Tiket saya</Link>
+                  <button type="button" onClick={() => setDone(null)} className="rounded-xl border border-white/20 py-3 text-sm font-semibold text-white/90 hover:bg-white/5">Tutup</button>
+                </div>
+              </div>
+            </div>
+          </div>
+      )}
     </div>
   );
 }
