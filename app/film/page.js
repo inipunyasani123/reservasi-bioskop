@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { films } from '@/lib/data';
 import { halaman } from '@/lib/seo';
 
@@ -17,7 +18,7 @@ export default function FilmIndex() {
         {films.map((f) => (
           <li key={f.id}>
             <Link href={`/film/${f.id}`} className="group flex gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-amber-400/60">
-              <span className={`flex h-28 w-20 shrink-0 items-end rounded-lg bg-gradient-to-br p-2 text-[10px] font-bold ${f.color}`} aria-hidden="true"><span className="rounded bg-black/50 px-1.5 py-0.5">{f.klasifikasi}</span></span>
+              <Image src={f.poster} alt="" width={80} height={120} className="h-[7.5rem] w-20 shrink-0 rounded-lg bg-white/5 object-cover shadow-lg shadow-black/40 ring-1 ring-white/10" />
               <span className="min-w-0">
                 <span className="block text-lg font-bold group-hover:text-amber-300">{f.title}</span>
                 <span className="block text-xs text-white/75">{f.genre} · {f.durasi} menit · {f.klasifikasi}</span>

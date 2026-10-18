@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Check, Clock } from 'lucide-react';
 import { cinema, rows, cols, aisleAfter, programHari, hargaTiket, terisiContoh, getFilm } from '@/lib/data';
 import { useLocalStorage } from '@/lib/useLocalStorage';
@@ -105,14 +106,17 @@ export default function BioskopApp() {
         <section aria-labelledby="h-program" className="mt-6">
           <h2 id="h-program" className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">Program {date ? fmtTanggal(date, { weekday: 'long', day: 'numeric', month: 'long' }) : ''}</h2>
           <ul className="mt-3 space-y-2">
-            {!date && Array.from({ length: 5 }, (_, i) => <li key={i} className="h-[4.6rem] rounded-xl border border-white/10 bg-white/5 sm:h-16" aria-hidden="true" />)}
+            {!date && Array.from({ length: 5 }, (_, i) => <li key={i} className="h-[4.625rem] rounded-xl border border-white/10 bg-white/5" aria-hidden="true" />)}
             {program.map((p) => {
               const habis = lewat(date, p.jam); const aktif = showId === p.id;
               return (
                 <li key={p.id}>
                   <button type="button" disabled={habis} onClick={() => { setShowId(p.id); setSeats([]); }} aria-pressed={aktif}
                     className={`flex w-full items-center gap-4 overflow-hidden rounded-xl border text-left transition disabled:cursor-not-allowed disabled:opacity-50 ${aktif ? 'border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/30' : 'border-white/10 bg-white/5 hover:border-white/30'}`}>
-                    <span className={`flex h-16 w-14 shrink-0 items-end justify-center bg-gradient-to-br pb-1.5 text-[10px] font-bold ${p.film.color}`}><span className="rounded bg-black/50 px-1.5 py-0.5">{p.film.klasifikasi}</span></span>
+                    <span className="relative h-[4.5rem] w-12 shrink-0 bg-white/5">
+                      <Image src={p.film.poster} alt="" width={48} height={72} className="h-full w-full object-cover" />
+                      <span className="absolute inset-x-0 bottom-1 flex justify-center text-[10px] font-bold"><span className="rounded bg-black/75 px-1 py-px">{p.film.klasifikasi}</span></span>
+                    </span>
                     <span className="w-24 shrink-0 font-mono text-lg font-bold">{p.jam}<span className="block text-[11px] font-normal text-white/75">s.d. {p.selesai}</span></span>
                     <span className="min-w-0 flex-1 py-2 pr-3">
                       <span className="block truncate font-semibold">{p.film.title}</span>
@@ -202,7 +206,10 @@ export default function BioskopApp() {
               {/* Tiket bersobekan: badan tiket di atas, potongan kode di bawah garis sobek */}
               <div className={`h-1.5 bg-gradient-to-r ${getFilm(done.filmId)?.color || 'from-amber-400 to-amber-600'}`} aria-hidden="true" />
               <div className="flex gap-4 px-6 pb-5 pt-6">
-                <span className={`flex h-20 w-14 shrink-0 items-end justify-center rounded-lg bg-gradient-to-br pb-1.5 text-[10px] font-bold ${getFilm(done.filmId)?.color || ''}`} aria-hidden="true"><span className="rounded bg-black/50 px-1.5 py-0.5">{done.klasifikasi}</span></span>
+                <span className="relative h-[5.25rem] w-14 shrink-0 overflow-hidden rounded-lg bg-white/5" aria-hidden="true">
+                  {getFilm(done.filmId) && <Image src={getFilm(done.filmId).poster} alt="" width={56} height={84} className="h-full w-full object-cover" />}
+                  <span className="absolute inset-x-0 bottom-1.5 flex justify-center text-[10px] font-bold"><span className="rounded bg-black/75 px-1.5 py-0.5">{done.klasifikasi}</span></span>
+                </span>
                 <div className="min-w-0">
                   <h2 id="judul-selesai">
                     <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-amber-300"><Check size={13} aria-hidden="true" /> Tiket tersimpan</span>

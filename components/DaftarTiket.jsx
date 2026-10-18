@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { X } from 'lucide-react';
 import { useLocalStorage } from '@/lib/useLocalStorage';
 import { useHariIni } from '@/lib/useHariIni';
 import { fmtTanggal, sudahLewat, selisihHari, rupiah } from '@/lib/waktu';
-import { cinema } from '@/lib/data';
+import { cinema, getFilm } from '@/lib/data';
 
 export default function DaftarTiket() {
   const [tiket, setTiket, loaded] = useLocalStorage('bioskopkelir.tiket', []);
@@ -38,15 +39,19 @@ export default function DaftarTiket() {
           <ul className="mt-4 space-y-4">
             {nanti.map((t) => {
               const h = selisihHari(hari, t.date);
+              const f = getFilm(t.filmId);
               return (
                 <li key={t.id} className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-br from-white/10 to-white/5">
                   <div className="grid sm:grid-cols-[1fr_auto]">
-                    <div className="p-5">
-                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300">{h === 0 ? 'Hari ini' : h === 1 ? 'Besok' : `${h} hari lagi`}</p>
-                      <p className="mt-1 text-2xl font-bold">{t.film} <span className="text-sm font-semibold text-white/75">{t.klasifikasi}</span></p>
-                      <p className="mt-1 text-white/90">{fmtTanggal(t.date)} · {t.time}{t.selesai ? `–${t.selesai}` : ''}</p>
-                      <p className="mt-3 text-sm text-white/75">Kursi</p>
-                      <p className="flex flex-wrap gap-1.5">{t.seats.map((s) => <span key={s} className="rounded bg-amber-500 px-2 py-0.5 text-sm font-bold text-black">{s}</span>)}</p>
+                    <div className="flex gap-4 p-5">
+                      {f && <Image src={f.poster} alt="" width={64} height={96} className="h-24 w-16 shrink-0 rounded-lg bg-white/5 object-cover ring-1 ring-white/10" />}
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300">{h === 0 ? 'Hari ini' : h === 1 ? 'Besok' : `${h} hari lagi`}</p>
+                        <p className="mt-1 text-2xl font-bold">{t.film} <span className="text-sm font-semibold text-white/75">{t.klasifikasi}</span></p>
+                        <p className="mt-1 text-white/90">{fmtTanggal(t.date)} · {t.time}{t.selesai ? `–${t.selesai}` : ''}</p>
+                        <p className="mt-3 text-sm text-white/75">Kursi</p>
+                        <p className="flex flex-wrap gap-1.5">{t.seats.map((s) => <span key={s} className="rounded bg-amber-500 px-2 py-0.5 text-sm font-bold text-black">{s}</span>)}</p>
+                      </div>
                     </div>
                     <div className="flex flex-col items-start justify-between gap-3 border-t border-dashed border-white/20 p-5 sm:items-end sm:border-l sm:border-t-0">
                       <div className="sm:text-right">

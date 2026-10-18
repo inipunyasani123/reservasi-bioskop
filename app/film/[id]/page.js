@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { films, getFilm, programHari, cinema } from '@/lib/data';
@@ -31,10 +32,9 @@ export default async function FilmPage({ params }) {
   return (
     <main className="mx-auto max-w-3xl px-5 py-10">
       <Link href="/film" className="-my-2 inline-flex items-center gap-1 py-2 text-sm font-semibold text-white/80 hover:text-amber-300"><ArrowLeft size={15} aria-hidden="true" /> Semua film</Link>
-      <div className="mt-6 grid gap-8 sm:grid-cols-[200px_1fr]">
-        <div className={`flex aspect-[2/3] items-end rounded-2xl bg-gradient-to-br p-4 ${f.color}`} aria-hidden="true">
-          <span className="text-2xl font-bold leading-tight text-white drop-shadow">{f.title}</span>
-        </div>
+      <div className="mt-6 grid gap-8 sm:grid-cols-[220px_1fr]">
+        <Image src={f.poster} alt={f.posterAlt} width={800} height={1200} priority fetchPriority="high" sizes="(min-width: 640px) 220px, 352px"
+          className="mx-auto aspect-[2/3] h-auto w-full max-w-[22rem] rounded-2xl bg-white/5 object-cover shadow-2xl shadow-black/60 ring-1 ring-white/10" />
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">{f.genre}</p>
           <h1 className="mt-2 text-4xl font-bold">{f.title}</h1>

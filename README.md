@@ -4,7 +4,7 @@ Bioskop satu layar (fiktif) dengan 96 kursi. Paradigma **peta kursi**: pilih har
 
 **Demo live:** https://reservasi-bioskop.pintuweb.id
 
-![Tangkapan layar](public/og.jpg)
+![Bioskop Kelir: lima poster film fiktif](public/og.jpg)
 
 > Purwarupa desain. Nama usaha, data, dan harga fiktif. Tidak ada pembayaran dan tidak ada yang dikirim ke server: pemesanan disimpan di `localStorage` peramban. Tanggal dan jam dihitung dalam WIB di peramban; keterisian contoh dibuat stabil per tanggal.
 
@@ -27,6 +27,12 @@ Bioskop satu layar (fiktif) dengan 96 kursi. Paradigma **peta kursi**: pilih har
 - Framer Motion, Lucide (ikon)
 - Font: Outfit (next/font)
 - SEO: metadata per halaman, Open Graph, sitemap.xml, dan robots.txt
+
+## Gambar
+
+Poster kelima film adalah ilustrasi buatan sendiri (SVG di `scripts/ilustrasi/poster.mjs`, dirender ke WebP 800×1200).
+Daftar berkas dan cara membuat ulang: [`public/images/SUMBER.md`](public/images/SUMBER.md). Gambar disajikan statis dari
+`public/_img/` (varian WebP buatan `scripts/static-images.mjs`), tanpa Image Optimization Vercel.
 
 ## Menjalankan secara lokal
 
