@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Check, Clock } from 'lucide-react';
-import { cinema, rows, cols, aisleAfter, programHari, hargaTiket, terisiContoh, getFilm } from '@/lib/data';
+import { cinema, rows, cols, aisleAfter, programHari, hargaTiket, terisiContoh, getFilm, PAGI_AKHIR_PEKAN, BARIS_PROGRAM } from '@/lib/data';
 import { useLocalStorage } from '@/lib/useLocalStorage';
 import { useHariIni } from '@/lib/useHariIni';
 import { useDialog } from '@/lib/useDialog';
@@ -106,7 +106,7 @@ export default function BioskopApp() {
         <section aria-labelledby="h-program" className="mt-6">
           <h2 id="h-program" className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">Program {date ? fmtTanggal(date, { weekday: 'long', day: 'numeric', month: 'long' }) : ''}</h2>
           <ul className="mt-3 space-y-2">
-            {!date && Array.from({ length: 5 }, (_, i) => <li key={i} className="h-[4.625rem] rounded-xl border border-white/10 bg-white/5" aria-hidden="true" />)}
+            {!date && Array.from({ length: BARIS_PROGRAM }, (_, i) => <li key={i} className="h-[4.625rem] rounded-xl border border-white/10 bg-white/5" aria-hidden="true" />)}
             {program.map((p) => {
               const habis = lewat(date, p.jam); const aktif = showId === p.id;
               return (
@@ -126,6 +126,17 @@ export default function BioskopApp() {
                 </li>
               );
             })}
+            {/* Hari kerja: baris keenam memberi tahu tayangan pagi akhir pekan, jadi tinggi daftar sama setiap hari. */}
+            {date && program.length < BARIS_PROGRAM && (
+              <li className="flex h-[4.625rem] items-center gap-4 overflow-hidden rounded-xl border border-dashed border-white/15 text-sm text-white/75">
+                <span className="w-12 shrink-0" aria-hidden="true" />
+                <span className="w-24 shrink-0 font-mono text-lg font-bold">{PAGI_AKHIR_PEKAN.jam}</span>
+                <span className="min-w-0 flex-1 py-2 pr-3">
+                  <Link href={`/film/${PAGI_AKHIR_PEKAN.film}`} className="block truncate font-semibold text-amber-300 underline-offset-4 hover:underline">{getFilm(PAGI_AKHIR_PEKAN.film).title}</Link>
+                  <span className="block text-xs">Khusus Sabtu &amp; Minggu</span>
+                </span>
+              </li>
+            )}
           </ul>
           {!date && <span className="mt-2 block h-8" aria-hidden="true" />}
           {show && <Link href={`/film/${show.film.id}`} className="mt-2 inline-block py-1.5 text-sm font-semibold text-amber-300 underline-offset-4 hover:underline">Sinopsis {show.film.title}</Link>}
