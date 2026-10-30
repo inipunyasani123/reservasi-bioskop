@@ -93,7 +93,7 @@ export default function BioskopApp() {
                 return (
                   <button key={d} type="button" disabled={habis} onClick={() => pilihHari(d)} aria-pressed={date === d}
                     className={`flex min-h-14 flex-col items-center justify-center rounded-lg border px-1 py-1.5 transition disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-20 sm:px-4 ${date === d ? 'border-amber-500 bg-amber-500 text-black' : 'border-white/20 bg-white/5 text-white/90 hover:border-amber-400'}`}>
-                    <span className="text-[11px] font-semibold uppercase tracking-wide">{i === 0 ? 'Hari ini' : i === 1 ? 'Besok' : HARI[hariKe(d)]}</span>{' '}
+                    <span className="text-xs font-semibold uppercase tracking-wide">{i === 0 ? 'Hari ini' : i === 1 ? 'Besok' : HARI[hariKe(d)]}</span>{' '}
                     <span className="text-lg font-bold leading-tight">{Number(d.slice(8))}</span>
                     <span className="sr-only"> {fmtTanggal(d, { month: 'long' })}{habis ? ', semua jam tayang sudah lewat' : ''}</span>
                   </button>
@@ -115,9 +115,9 @@ export default function BioskopApp() {
                     className={`flex w-full items-center gap-4 overflow-hidden rounded-xl border text-left transition disabled:cursor-not-allowed disabled:opacity-50 ${aktif ? 'border-amber-500 bg-amber-500/10 ring-2 ring-amber-500/30' : 'border-white/10 bg-white/5 hover:border-white/30'}`}>
                     <span className="relative h-[4.5rem] w-12 shrink-0 bg-white/5">
                       <Image src={p.film.poster} alt="" width={48} height={72} className="h-full w-full object-cover" />
-                      <span className="absolute inset-x-0 bottom-1 flex justify-center text-[10px] font-bold"><span className="rounded bg-black/75 px-1 py-px">{p.film.klasifikasi}</span></span>
+                      <span className="absolute inset-x-0 bottom-1 flex justify-center text-xs font-bold"><span className="rounded bg-black/75 px-1 py-px">{p.film.klasifikasi}</span></span>
                     </span>
-                    <span className="w-24 shrink-0 font-mono text-lg font-bold">{p.jam}<span className="block text-[11px] font-normal text-white/75">s.d. {p.selesai}</span></span>
+                    <span className="w-24 shrink-0 font-mono text-lg font-bold">{p.jam}<span className="block text-xs font-normal text-white/75">s.d. {p.selesai}</span></span>
                     <span className="min-w-0 flex-1 py-2 pr-3">
                       <span className="block truncate font-semibold">{p.film.title}</span>
                       <span className="block text-xs text-white/75">{p.film.genre} · {p.film.durasi} menit{habis ? ' · sudah mulai' : ''}</span>
@@ -150,13 +150,13 @@ export default function BioskopApp() {
               <div className="h-2 w-full rounded-full bg-gradient-to-r from-amber-400/10 via-amber-400 to-amber-400/10 shadow-[0_4px_30px_rgba(245,158,11,0.55)]" />
               <div className="absolute left-1/2 top-2 h-12 w-4/5 -translate-x-1/2 rounded-full bg-amber-400/20 blur-2xl" />
             </div>
-            <p className="mb-8 mt-4 text-center text-[11px] uppercase tracking-[0.35em] text-amber-200">Layar · {sisa} kursi tersisa</p>
+            <p className="mb-8 mt-4 text-center text-xs uppercase tracking-[0.35em] text-amber-200">Layar · {sisa} kursi tersisa</p>
 
             <div className="-mx-1 overflow-x-auto px-1 pb-2">
               <div className="mx-auto w-full max-w-[30rem] space-y-[3px] sm:space-y-1.5">
                 {rows.map((r) => (
                   <div key={r} role="group" aria-label={`Baris ${r}`} className="grid items-center gap-[3px] sm:gap-1.5" style={KOLOM}>
-                    <span className="text-center text-[11px] font-bold text-white/75" aria-hidden="true">{r}</span>
+                    <span className="text-center text-xs font-bold text-white/75" aria-hidden="true">{r}</span>
                     {Array.from({ length: cols }, (_, i) => i + 1).map((c) => {
                       const id = `${r}${c}`;
                       const taken = takenSet.has(id);
@@ -164,7 +164,7 @@ export default function BioskopApp() {
                       return [
                         c === aisleAfter + 1 ? <span key={`lorong-${r}`} aria-hidden="true" /> : null,
                         <button key={id} type="button" disabled={taken} onClick={() => toggle(id)} aria-pressed={sel}
-                          className={`flex aspect-square w-full items-center justify-center rounded-md rounded-b-sm text-[10px] font-bold transition sm:text-[11px] ${
+                          className={`flex aspect-square w-full items-center justify-center rounded-md rounded-b-sm text-xs font-bold transition ${
                             sel ? 'bg-amber-500 text-black' : taken ? 'cursor-not-allowed bg-white/10 text-white/30' : 'bg-white/20 text-white/90 hover:bg-amber-400/50'
                           }`}>
                           <span className="sr-only">Kursi {r}</span>{c}<span className="sr-only">{taken ? ', terisi' : ''}</span>
@@ -194,7 +194,7 @@ export default function BioskopApp() {
                 <div className="min-w-0">
                   <p className="truncate text-xs text-white/75">{seats.length} kursi · {show.film.title} · {fmtTanggal(date, { weekday: 'short', day: 'numeric', month: 'short' })} {show.jam}</p>
                   <p className="mt-0.5 flex flex-wrap gap-1">
-                    {[...seats].sort().map((s) => <span key={s} className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[11px] font-bold text-amber-200">{s}</span>)}
+                    {[...seats].sort().map((s) => <span key={s} className="rounded bg-amber-500/20 px-1.5 py-0.5 text-xs font-bold text-amber-200">{s}</span>)}
                   </p>
                 </div>
                 <p className="shrink-0 font-bold text-amber-300">{rupiah(total)}</p>
@@ -206,7 +206,7 @@ export default function BioskopApp() {
                   className="w-full rounded-lg border border-white/20 bg-white/5 px-3 py-2.5 text-sm outline-none placeholder:text-white/60 focus:border-amber-400" /></label>
                 <button type="submit" className="shrink-0 rounded-lg bg-amber-500 px-6 py-2.5 text-sm font-bold text-black transition hover:bg-amber-400">Simpan tiket</button>
               </div>
-              <p className="mt-2 text-center text-[11px] text-white/70">Purwarupa: tanpa pembayaran, tiket disimpan di peramban ini.</p>
+              <p className="mt-2 text-center text-xs text-white/70">Purwarupa: tanpa pembayaran, tiket disimpan di peramban ini.</p>
             </div>
           </form>
       )}
@@ -219,20 +219,20 @@ export default function BioskopApp() {
               <div className="flex gap-4 px-6 pb-5 pt-6">
                 <span className="relative h-[5.25rem] w-14 shrink-0 overflow-hidden rounded-lg bg-white/5" aria-hidden="true">
                   {getFilm(done.filmId) && <Image src={getFilm(done.filmId).poster} alt="" width={56} height={84} className="h-full w-full object-cover" />}
-                  <span className="absolute inset-x-0 bottom-1.5 flex justify-center text-[10px] font-bold"><span className="rounded bg-black/75 px-1.5 py-0.5">{done.klasifikasi}</span></span>
+                  <span className="absolute inset-x-0 bottom-1.5 flex justify-center text-xs font-bold"><span className="rounded bg-black/75 px-1.5 py-0.5">{done.klasifikasi}</span></span>
                 </span>
                 <div className="min-w-0">
                   <h2 id="judul-selesai">
-                    <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.25em] text-amber-300"><Check size={13} aria-hidden="true" /> Tiket tersimpan</span>
+                    <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-amber-300"><Check size={13} aria-hidden="true" /> Tiket tersimpan</span>
                     <span className="mt-1 block text-2xl font-bold leading-tight">{done.film}</span>
                   </h2>
                   <p className="mt-1 text-sm text-white/75">{fmtTanggal(done.date, { weekday: 'long', day: 'numeric', month: 'long' })}</p>
                 </div>
               </div>
               <dl className="grid grid-cols-3 gap-3 px-6 pb-5 text-sm">
-                <div><dt className="text-[11px] uppercase tracking-wide text-white/70">Kursi</dt><dd className="mt-0.5 font-bold text-amber-300">{done.seats.join(', ')}</dd></div>
-                <div><dt className="text-[11px] uppercase tracking-wide text-white/70">Jam</dt><dd className="mt-0.5 font-mono font-bold">{done.time}</dd></div>
-                <div><dt className="text-[11px] uppercase tracking-wide text-white/70">Total</dt><dd className="mt-0.5 font-bold">{rupiah(done.total)}</dd></div>
+                <div><dt className="text-xs uppercase tracking-wide text-white/70">Kursi</dt><dd className="mt-0.5 font-bold text-amber-300">{done.seats.join(', ')}</dd></div>
+                <div><dt className="text-xs uppercase tracking-wide text-white/70">Jam</dt><dd className="mt-0.5 font-mono font-bold">{done.time}</dd></div>
+                <div><dt className="text-xs uppercase tracking-wide text-white/70">Total</dt><dd className="mt-0.5 font-bold">{rupiah(done.total)}</dd></div>
               </dl>
               <div className="relative border-t-2 border-dashed border-white/15" aria-hidden="true">
                 <span className="absolute -left-3 -top-3 h-6 w-6 rounded-full bg-[#040406]" />
@@ -240,7 +240,7 @@ export default function BioskopApp() {
               </div>
               <div className="px-6 pb-6 pt-5">
                 <div className="flex items-end justify-between gap-3">
-                  <div><p className="text-[11px] uppercase tracking-wide text-white/70">Kode tiket</p><p className="font-mono text-2xl font-bold tracking-widest">{done.kode}</p></div>
+                  <div><p className="text-xs uppercase tracking-wide text-white/70">Kode tiket</p><p className="font-mono text-2xl font-bold tracking-widest">{done.kode}</p></div>
                   <p className="text-right text-sm text-white/75">atas nama<br /><span className="font-semibold text-white">{done.name}</span></p>
                 </div>
                 <p className="mt-4 flex items-start gap-1.5 text-xs text-white/75"><Clock size={13} className="mt-0.5 shrink-0" aria-hidden="true" /> Pintu studio dibuka 15 menit sebelum film. Purwarupa: tanpa pembayaran, tiket hanya tersimpan di peramban ini.</p>
